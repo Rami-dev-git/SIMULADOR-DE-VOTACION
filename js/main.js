@@ -1,78 +1,67 @@
-// VARIABLES PRINCIPALES: ARRAY DE CANDIDATOS Y ARRAY PARA ALMACENAR SUS VOTOS //
-const candidatos = ["Sergio Massa", "Javier Milei", "Patricia Bullrich"]
-let votos = [0, 0, 0]
+// LISTA DE VARIALES CON LOS CANDIDATOS, INFORMACION Y LOCALSTORAGE PARA VOLVER A 0 CADA VEZ QUE ACTUALIZA LA PAGINA
+const candidatos = ["Sergio Massa", "Javier Milei", "Patricia Bullrich"];
+const edades = [52, 53, 67];
+const profesiones = ["Economista", "Licenciado en Administración", "Abogada"];
+const partidos = [
+    "Unión por la Patria",
+    "La Libertad Avanza",
+    "Juntos por el Cambio",
+];
+localStorage.removeItem("votos");
 
-// ARRAYS PARA GUARDAR DATOS ADICIONALES DE CADA CANDIDATO, SE MOSTRARÁN SI RESULTAN GANADORES //
-const edades = [52, 53, 67]
-const profesiones = ["Economista", "Licenciado en Administración", "Abogada"]
-const partidos = ["Unión por la Patria", "La Libertad Avanza", "Juntos por el Cambio"]
+// VARIABLE PARA OBTENER VOTOS DESDE LOCALSTORAGE
+let votos = JSON.parse(localStorage.getItem("votos")) || [0, 0, 0];
 
-// FUNCIÓN PARA REGISTRAR EL VOTO SEGÚN LA OPCIÓN INGRESADA POR EL USUARIO, AL INGRESAR 5 SE CIERRA EL CICLO. UTILIZO ADEMAS UN -1 AL NUMERO REGISTRADO YA QUE JS COMIENZA DESDE 0 //
+// FUNCION PARA VOTAR
 function votar(numero) {
-    if (numero >= 1 && numero <= 3) {
-        votos[numero - 1]++
-        alert("Voto registrado para " + candidatos[numero - 1])
-        return true
-    } else if (numero === 5) {
-        return false
-    } else {
-        alert("Ingrese 1, 2, 3 para votar, o 5 para salir.")
-        return true
-    }
+    votos[numero - 1]++;
+    localStorage.setItem("votos", JSON.stringify(votos));
+    mostrarMensaje("Voto registrado para " + candidatos[numero - 1]);
 }
 
-// FUNCIÓN PARA MOSTRAR LA CANTIDAD DE VOTOS OBTENIDOS POR CADA CANDIDATO //
+// FUNCION QUE MUESTA EL MENSAJE EN PANTALLA
+function mostrarMensaje(texto) {
+    const resultado = document.getElementById("resultado");
+    resultado.innerHTML = `<p>${texto}</p>`;
+}
+
+// FUNCION PARA PODER MOSTRAR LOS RESULTADOS
 function mostrarResultados() {
-    console.log("Resultados de la votación:")
-    console.log("Sergio Massa: " + votos[0] + " votos")
-    console.log("Javier Milei: " + votos[1] + " votos")
-    console.log("Patricia Bullrich: " + votos[2] + " votos")
+    let resultadoHTML = "<h3>Resultados de la votación:</h3><ul>";
+    for (let i = 0; i < candidatos.length; i++) {
+        resultadoHTML += `<li>${candidatos[i]}: ${votos[i]} votos</li>`;
+    }
+    resultadoHTML += "</ul>";
+    return resultadoHTML;
 }
 
-// FUNCIÓN PARA MOSTRAR AL CANDIDATO GANADOR Y SUS DATOS (EDAD, PROFESIÓN Y PARTIDO) //
+// FUNCIONES PARA PODER MOSTRAR GANADOR Y SUS DATOS
+function finalizarVotacion() {
+    mostrarGanador();
+}
+
 function mostrarGanador() {
-    let a = votos[0]
-    let b = votos[1]
-    let c = votos[2]
+    const maxVotos = Math.max(...votos);
+    const ganadores = [];
 
-    if (a > b && a > c) {
-        console.log("Ganador: " + candidatos[0])
-        console.log("Edad: " + edades[0])
-        console.log("Profesión: " + profesiones[0])
-        console.log("Partido: " + partidos[0])
-    } 
-    else if (b > a && b > c) {
-        console.log("Ganador: " + candidatos[1])
-        console.log("Edad: " + edades[1])
-        console.log("Profesión: " + profesiones[1])
-        console.log("Partido: " + partidos[1])
-    } 
-    else if (c > a && c > b) {
-        console.log("Ganador: " + candidatos[2])
-        console.log("Edad: " + edades[2])
-        console.log("Profesión: " + profesiones[2])
-        console.log("Partido: " + partidos[2])
+    for (let i = 0; i < votos.length; i++) {
+        if (votos[i] === maxVotos) {
+            ganadores.push(i);
+        }
     }
-}
 
-// EN ESTE CICLO SIMULO LA VOTACIÓN MIENTRAS FUNCIONAMIENTO SEA TRUE, UTILIZO UN PARSEINT PARA PODER ALMACENAR UN NUMERO Y NO UN STRING //
-let funcionamiento = true
+    let resultado = mostrarResultados();
 
-while (funcionamiento) {
-    let numero = prompt("Bienvenido a la votación. Ingrese el número del candidato: 1 - Sergio Massa 2 - Javier Milei 3 - Patricia Bullrich 5 - Finalizar");
-
-    if (numero === "1" || numero === "2" || numero === "3") {
-        votar(parseInt(numero))
-    } 
-    else if (numero === "5") {
-        funcionamiento = false
-        alert("Votación finalizada.")
-    } 
-    else {
-        alert("Ingrese 1, 2, 3 o 5.")
+    if (ganadores.length === 1) {
+        const idx = ganadores[0];
+        resultado += `<p><strong>Ganador:</strong> ${candidatos[idx]}</p>`;
+        resultado += `<p>Edad: ${edades[idx]}</p>`;
+        resultado += `<p>Profesión: ${profesiones[idx]}</p>`;
+        resultado += `<p>Partido: ${partidos[idx]}</p>`;
+    } else {
+        let nombres = ganadores.map((i) => candidatos[i]).join(" y ");
+        resultado += `<p><strong>Empate entre:</strong> ${nombres}</p>`;
     }
-}
 
-// MOSTRAR LOS RESULTADOS Y EL GANADOR AL FINALIZAR LA VOTACIÓN //
-mostrarResultados();
-mostrarGanador();
+    document.getElementById("resultado").innerHTML = resultado;
+}

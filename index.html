@@ -1,14 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Main de JS -->
+    <link rel="stylesheet" href="style/style.css">
     <script defer src="js/main.js"></script>
-    <title>Simulador de votacion</title>
+    <title>Simulador de Votación</title>
 </head>
+
 <body>
-    <h1> Primera entrega de simulador en JavaScript </h1>
-    <p> Este proyecto simula una votación entre 3 candidatos. El usuario puede votar indicando el número del candidato, y al seleccionar la opcion de finalizar la votacion, expone el ganador y algunos datos del mismo. </p>
+    <h1>Simulador de Votación</h1>
+    <p>Votá por tu candidato favorito:</p>
+
+    <div class="candidatos">
+        <button onclick="votar(1)">Candidato 1</button>
+        <button onclick="votar(2)">Candidato 2</button>
+        <button onclick="votar(3)">Candidato 3</button>
+    </div>
+
+    <br>
+
+    <button onclick="finalizarVotacion()">Finalizar Votación</button>
+
+    <h2>Resultado:</h2>
+    <div id="resultado"></div>
 </body>
+
 </html>
